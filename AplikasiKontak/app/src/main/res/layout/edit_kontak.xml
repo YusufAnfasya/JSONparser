@@ -1,0 +1,108 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="20dp"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/img"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/baseline_person_add_alt_1_24"
+        android:paddingBottom="10dp"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nama Mahasiswa" />
+
+        <EditText
+            android:id="@+id/nm"
+            android:layout_width="400px"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No HP Mahasiswa" />
+
+        <EditText
+            android:id="@+id/hp"
+            android:layout_width="400px"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nama Mata Kuliah" />
+
+        <EditText
+            android:id="@+id/mk"
+            android:layout_width="400px"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="5px"
+            android:text="Nilai Tugas" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="12px"
+            android:text="Nilai Quiz" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="35px"
+            android:text="Nilai ETS" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="35px"
+            android:text="Nilai EAS" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <EditText
+            android:id="@+id/tugas"
+            android:layout_width="200px"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/quiz"
+            android:layout_width="200px"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/ets"
+            android:layout_width="200px"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/eas"
+            android:layout_width="200px"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+
+</LinearLayout>

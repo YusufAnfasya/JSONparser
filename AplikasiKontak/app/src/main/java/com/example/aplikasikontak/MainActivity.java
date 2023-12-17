@@ -3,6 +3,7 @@ package com.example.aplikasikontak;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -27,8 +28,9 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private ListView lv;
     private ImageView add;
-    private ImageView del;
+    private ImageView edit;
     private ImageView hapus;
+    private ImageView cari;
 
     private kontakAdapter kAdapter;
 
@@ -47,6 +49,13 @@ public class MainActivity extends AppCompatActivity {
 
         hapus = (ImageView)findViewById(R.id.del);
         hapus.setOnClickListener(operasi);
+
+        edit = (ImageView)findViewById(R.id.edit);
+        edit.setOnClickListener(operasi);
+
+        cari = (ImageView)findViewById(R.id.cari);
+        cari.setOnClickListener(operasi);
+
 
         ArrayList<kontak> listKontak = new ArrayList<kontak>();
         kAdapter = new kontakAdapter(this, 0, listKontak);
@@ -72,13 +81,19 @@ public class MainActivity extends AppCompatActivity {
         public void onClick(View v) {
 
             if (v.getId() == R.id.tambah) {
-
                 tambah_data();
             }
             else if (v.getId() == R.id.del) {
                 hapus_data();
-
             }
+            else if (v.getId() == R.id.edit) {
+                cari_data();
+            }
+            else if (v.getId() == R.id.cari) {
+                cari_saja();
+            }
+
+
         }
     };
 //
@@ -109,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this, "Terdapat sejumlah " + cur.getCount(),
                 Toast.LENGTH_LONG).show();
         int i = 0;
+        kAdapter.clear();
         if (cur.getCount() > 0) cur.moveToFirst();
         while (i < cur.getCount()) {
             insertKontak(cur.getString(cur.getColumnIndex("nama")),
@@ -123,6 +139,28 @@ public class MainActivity extends AppCompatActivity {
             i++;
         }
     }
+
+    private void ambil_saja(String nohp) {
+        Cursor cur = dbku.rawQuery("select * from kontak where nohp = '"+nohp+"'", null);
+        Toast.makeText(this, "Terdapat sejumlah " + cur.getCount(),
+                Toast.LENGTH_LONG).show();
+        int i = 0;
+        kAdapter.clear();
+        if (cur.getCount() > 0) cur.moveToFirst();
+        while (i < cur.getCount()) {
+            insertKontak(cur.getString(cur.getColumnIndex("nama")),
+                    cur.getString(cur.getColumnIndex("nohp")),
+                    cur.getString(cur.getColumnIndex("mk")),
+                    cur.getInt(cur.getColumnIndex("tugas")),
+                    cur.getInt(cur.getColumnIndex("quiz")),
+                    cur.getInt(cur.getColumnIndex("ets")),
+                    cur.getInt(cur.getColumnIndex("eas")));
+
+            cur.moveToNext();
+            i++;
+        }
+    }
+
 //
 //
     private void tambah_data() {
@@ -170,6 +208,123 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void edit_item(String nm, String hp, String mk, Integer tugas, Integer quiz, Integer ets, Integer eas){
+        ContentValues datanya = new ContentValues();
+        datanya.put("nama", nm);
+        datanya.put("nohp", hp);
+        datanya.put("mk", mk);
+        datanya.put("tugas", tugas);
+        datanya.put("quiz", quiz);
+        datanya.put("ets", ets);
+        datanya.put("eas", eas);
+        dbku.update("kontak", datanya, "nohp='"+hp+"'",null);
+    }
+
+    private void tampil_edit(String ehp){
+        LayoutInflater li = LayoutInflater.from(this);
+        View editnya = li.inflate(R.layout.edit_kontak,null);
+
+        AlertDialog.Builder dialognya = new AlertDialog.Builder(this);
+        dialognya.setView(editnya);
+        dialognya.setTitle("Update Kontak");
+
+        final EditText nm = (EditText) editnya.findViewById(R.id.nm);
+        final EditText hp = (EditText) editnya.findViewById(R.id.hp);
+        final EditText mk = (EditText) editnya.findViewById(R.id.mk);
+        final EditText tugas = (EditText) editnya.findViewById(R.id.tugas);
+        final EditText quiz = (EditText) editnya.findViewById(R.id.quiz);
+        final EditText ets = (EditText) editnya.findViewById(R.id.ets);
+        final EditText eas = (EditText) editnya.findViewById(R.id.eas);
+
+        Cursor c = dbku.rawQuery("SELECT * FROM kontak WHERE nohp = '"+ehp+"'", null);
+        c.moveToNext();
+        nm.setText(c.getString(c.getColumnIndex("nama")));
+        hp.setText(c.getString(c.getColumnIndex("nohp")));
+        mk.setText(c.getString(c.getColumnIndex("mk")));
+        tugas.setText(c.getString(c.getColumnIndex("tugas")));
+        quiz.setText(c.getString(c.getColumnIndex("quiz")));
+        ets.setText(c.getString(c.getColumnIndex("ets")));
+        eas.setText(c.getString(c.getColumnIndex("eas")));
+
+        dialognya.setPositiveButton("Update", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int i) {
+                edit_item(nm.getText().toString(), hp.getText().toString(),
+                        mk.getText().toString(),
+                        Integer.parseInt(tugas.getText().toString()),
+                        Integer.parseInt(quiz.getText().toString()),
+                        Integer.parseInt(ets.getText().toString()),
+                        Integer.parseInt(eas.getText().toString()));
+                Toast.makeText(getBaseContext(), "Data Berhasil diupdate", Toast.LENGTH_LONG).show();
+                ambildata();
+                dialog.dismiss();
+            }
+        });
+        dialognya.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        dialognya.show();
+    }
+
+    private void cari_data(){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Cari Data");
+
+        View view = getLayoutInflater().inflate(R.layout.cari_kontak, null);
+        builder.setView(view);
+
+
+        final EditText nohp = (EditText) view.findViewById(R.id.etHP);
+
+        builder.setCancelable(false)
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        tampil_edit(nohp.getText().toString());
+                        dialog.dismiss();
+                    }
+                })
+                .setNegativeButton("Batal", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+        builder.show();
+    }
+
+    private void cari_saja(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Cari Data");
+
+        View view = getLayoutInflater().inflate(R.layout.cari_kontak, null);
+        builder.setView(view);
+
+
+        final EditText nohp = (EditText) view.findViewById(R.id.etHP);
+
+        builder.setCancelable(false)
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        ambil_saja(nohp.getText().toString());
+                        dialog.dismiss();
+                    }
+                })
+                .setNegativeButton("Batal", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+        builder.show();
+    }
+
     private void hapus_data(){
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -193,6 +348,7 @@ public class MainActivity extends AppCompatActivity {
                     // Update the ListView
 
                     Toast.makeText(MainActivity.this, "Data Berhasil Dihapus", Toast.LENGTH_LONG).show();
+                    ambildata();
                 } catch (Exception e) {
                     // Log any exceptions for debugging
                     e.printStackTrace();
