@@ -40,16 +40,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent it = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                File imagesFolder = new
-                        File(Environment.getExternalStorageDirectory(), "HasilFoto");
-                imagesFolder.mkdirs();
-                Date d = new Date();
-                CharSequence s = DateFormat.format("yyyyMMdd-hh-mm-ss", d.getTime());
-                nmFile = imagesFolder + File.separator + s.toString() + ".jpg";
-                File image = new File(nmFile);
-
-                Uri uriSavedImage = Uri.fromFile(image);
-                it.putExtra(MediaStore.EXTRA_OUTPUT, uriSavedImage);
+//                File imagesFolder = new File(Environment.getExternalStorageDirectory(), "HasilFoto");
+//                imagesFolder.mkdirs();
+//                Date d = new Date();
+//                CharSequence s = DateFormat.format("yyyyMMdd-hh-mm-ss", d.getTime());
+//                nmFile = imagesFolder + File.separator + s.toString() + ".jpg";
+//                File image = new File(nmFile);
+//
+//                Uri uriSavedImage = Uri.fromFile(image);
+//                it.putExtra(MediaStore.EXTRA_OUTPUT, uriSavedImage);
                 startActivityForResult(it, kodekamera);
             }
         });
@@ -70,15 +69,24 @@ public class MainActivity extends AppCompatActivity {
 
     private void prosesKamera(Intent datanya) {
         Bitmap bm;
-        //bm = (Bitmap) datanya.getExtras().get("data");
-        BitmapFactory.Options options;
-        options = new BitmapFactory.Options();
+        BitmapFactory.Options options = new BitmapFactory.Options();
         options.inSampleSize = 2;
-        bm = BitmapFactory.decodeFile(nmFile, options);
-        iv.setImageBitmap(bm); // Set imageview to image that was
-        Toast.makeText(this, "Data Telah Terload ke ImageView" + nmFile, Toast.LENGTH_SHORT).show();
+
+        try {
+            bm = BitmapFactory.decodeFile(nmFile, options);
+            iv.setImageBitmap(bm); // Set imageview to image that was
+            Toast.makeText(this, "Data Telah Terload ke ImageView" + nmFile, Toast.LENGTH_SHORT).show();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            Toast.makeText(this, "Data Error" + nmFile, Toast.LENGTH_SHORT).show();
+        }
     }
 }
+
+
+
+
 
 
 
